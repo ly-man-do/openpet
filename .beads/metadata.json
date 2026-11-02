@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "openpet",
+  "project_id": "741b10b9-5dd4-4b90-b652-a5447ae70094"
+}
