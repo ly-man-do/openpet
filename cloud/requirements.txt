@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Pin exact versions once the first image builds on a GPU host (see Beads issue for the cloud test job).
+jax[cuda12]
+mujoco
+mujoco-mjx
+playground

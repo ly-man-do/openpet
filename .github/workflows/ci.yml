@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: Apache-2.0
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    name: Licence headers, code-CAD, part size
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - name: SPDX licence headers
+        run: python tools/ci/check_spdx.py
+      - name: Build code-CAD parts to STL/STEP
+        run: python hardware/core/fit_coupon.py --out build/stl
+      - name: Part-size check (256 mm P1S build volume)
+        run: python tools/ci/check_part_size.py hardware build/stl
+      - name: Tests (includes oversized-STL rejection)
+        run: pytest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cad-parts
+          path: build/stl
+
+  ros:
+    name: ROS 2 Lyrical workspace
+    runs-on: ubuntu-24.04
+    container: ros:lyrical-ros-base
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        working-directory: ros2_ws
+        run: |
+          source /opt/ros/lyrical/setup.bash
+          apt-get update
+          rosdep update
+          rosdep install --from-paths src --ignore-src -y
+          colcon build --event-handlers console_direct+
+      - name: Smoke test hello node
+        working-directory: ros2_ws
+        run: |
+          source install/setup.bash
+          timeout 5 ros2 run openpet_bringup hello || [ $? -eq 124 ]
+
+  firmware:
+    name: ESP32-S3 firmware
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5
+          target: esp32s3
+          path: firmware

@@ -60,12 +60,14 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 
 ## Build & Test
 
-_Add your build and test commands here_
+See the OpenPet Rules and local checks in [AGENTS.md](AGENTS.md); the plan is [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md).
 
 ```bash
-# Example:
-# npm install
-# npm test
+python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
+.venv/bin/python tools/ci/check_spdx.py
+.venv/bin/python hardware/core/fit_coupon.py --out build/stl
+.venv/bin/python tools/ci/check_part_size.py hardware build/stl
+.venv/bin/pytest
 ```
 
 ## Architecture Overview

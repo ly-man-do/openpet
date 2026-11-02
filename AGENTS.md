@@ -47,6 +47,33 @@ cp -rf source dest          # NOT: cp -r source dest
 - `apt-get` - use `-y` flag
 - `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
 
+## OpenPet Rules
+
+The project plan is [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md). It defines scope and exit criteria; Beads holds the live state of the work.
+
+- Use `bd` for all task tracking; no TODO lists in markdown
+- Start every session with `bd ready`; claim an issue (`bd update <id> --claim`) before working on it
+- Only work on issues from the currently unblocked phase
+- Never close a `needs-human` or `safety` issue; ask the owner instead
+- Close issues with a reason and the commit or file reference
+- File any new work as an issue straight away, linked `discovered-from` the issue that found it
+- Exit-gate issues close only when every criterion has evidence attached (test result, photo, video or log)
+- Record significant decisions in `docs/ai-log/` (see its README), citing the Beads issue ID
+- Every source file starts with an SPDX header (`tools/ci/check_spdx.py`): `Apache-2.0` for software, `CERN-OHL-P-2.0` for hardware sources, `CC-BY-4.0` for docs
+- Every printed part fits 256 × 256 × 256 mm in its print orientation (`tools/ci/check_part_size.py`); printer and servo dimensions come from `hardware/core/params.py`, never hard-coded
+- FDM only; no resin parts
+- The cat voice model lives outside the repo (`~/.openpet/voices/`); never commit or ship voice model files
+
+### Local checks
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
+.venv/bin/python tools/ci/check_spdx.py
+.venv/bin/python hardware/core/fit_coupon.py --out build/stl
+.venv/bin/python tools/ci/check_part_size.py hardware build/stl
+.venv/bin/pytest
+```
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:6cd5cc61 -->
 ## Beads Issue Tracker
 

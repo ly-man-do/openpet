@@ -4,3 +4,30 @@
 *.db
 .beads-credential-key
 .beads/proxieddb/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Generated CAD output (release STEP/STL packs are attached to tagged releases)
+build/
+
+# ROS 2 workspace build output
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# ESP-IDF build output
+firmware/build/
+firmware/sdkconfig.old
+firmware/managed_components/
+
+# Cat voice model: owner-supplied, never committed or shipped (plan Section 8.1, Phase 13)
+voices/
+*.onnx.json
+**/voices/**
+
+# OS
+.DS_Store
